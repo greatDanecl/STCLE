@@ -1,0 +1,43 @@
+name: 🔄 Procesar Datos STCLE
+
+on:
+  push:
+    paths:
+      - 'data/**/*.xlsx'
+      - 'data/**/*.xls'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  process-data:
+    name: Generar JSON del Dashboard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Instalar dependencias
+        run: pip install pandas openpyxl xlrd numpy
+
+      - name: ⚙️ Ejecutar parser
+        run: python src/parser.py
+
+      - name: 📊 Generar archivos split
+        run: python src/split_data.py
+
+      - name: 📝 Commit y push de datos generados
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "STCLE Bot"
+          git add src/
+          git diff --staged --quiet || git commit -m "🔄 Datos actualizados $(date '+%Y-%m-%d %H:%M UTC')"
+          git push
