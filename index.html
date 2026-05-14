@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STCLE · Dashboard de Roles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --red:       #C8102E;
+  --red-dark:  #8B0018;
+  --red-light: #E8365A;
+  --blue:      #1A237E;
+  --blue-mid:  #283593;
+  --blue-light:#3949AB;
+  --blue-sky:  #5C6BC0;
+  --white:     #FFFFFF;
+  --off-white: #F4F6FB;
+  --surface:   #FFFFFF;
+  --surface2:  #EEF1F9;
+  --surface3:  #E0E5F2;
+  --text:      #0D1340;
+  --text-mid:  #3A4069;
+  --text-light:#6B7298;
+  --border:    #CBD2EA;
+  --accent:    #C8102E;
+  --gold:      #F0A500;
+  --green:     #1B7F5E;
+  --shadow-sm: 0 2px 8px rgba(26,35,126,0.08);
+  --shadow:    0 4px 20px rgba(26,35,126,0.12);
+  --shadow-lg: 0 8px 40px rgba(26,35,126,0.18);
+  --radius:    12px;
+  --radius-sm: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--off-white);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─── */
+.header {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 60%, var(--blue-light) 100%);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(26,35,126,0.3);
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-logo { width: 44px; height: 44px; border-radius: 50%; background: white; padding: 4px; object-fit: contain; }
+.header-title { display: flex; flex-direction: column; }
+.header-title h1 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+.header-title span {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.header-badge {
+  font-size: 0.72rem;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.8);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── LAYOUT ─── */
+.container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+
+/* ─── CONTROL BAR ─── */
+.control-bar {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.control-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.control-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-light);
+}
+select {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--off-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 32px 8px 12px;
+  cursor: pointer;
+  min-width: 180px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233A4069' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color .2s, box-shadow .2s;
+}
+select:focus { outline: none; border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(57,73,171,0.12); }
+select:hover { border-color: var(--blue-sky); }
+.control-divider { width: 1px; height: 40px; background: var(--border); flex-shrink: 0; }
+
+.rank-selector { display: flex; gap: 8px; }
+.rank-btn {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: 0.05em;
+}
+.rank-btn:hover { border-color: var(--blue-light); color: var(--blue-light); }
+.rank-btn.active-jsb { background: var(--blue); border-color: var(--blue); color: white; box-shadow: 0 2px 10px rgba(26,35,126,0.3); }
+.rank-btn.active-tc  { background: var(--red);  border-color: var(--red);  color: white; box-shadow: 0 2px 10px rgba(200,16,46,0.3); }
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.section-title::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ─── KPI GRID ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.kpi-card.blue::before  { background: linear-gradient(90deg, var(--blue), var(--blue-sky)); }
+.kpi-card.red::before   { background: linear-gradient(90deg, var(--red-dark), var(--red-light)); }
+.kpi-card.gold::before  { background: linear-gradient(90deg, #b07800, var(--gold)); }
+.kpi-card.green::before { background: linear-gradient(90deg, #0d5c42, #2ecc9e); }
+.kpi-card.purple::before{ background: linear-gradient(90deg, #5c1a8b, #9b59d0); }
+.kpi-icon {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+  display: block;
+}
+.kpi-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.kpi-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+}
+.kpi-sub {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  margin-top: 6px;
+}
+.kpi-delta {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 6px;
+}
+.kpi-delta.pos { background: #d4f4e8; color: var(--green); }
+.kpi-delta.neg { background: #fde8ec; color: var(--red); }
+
+/* ─── CHARTS GRID ─── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.chart-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.chart-card.wide { grid-column: span 2; }
+.chart-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chart-title .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.chart-wrap { position: relative; height: 220px; }
+.chart-wrap.tall { height: 280px; }
+
+/* ─── DIVIDER ─── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+  margin: 28px 0;
+}
+
+/* ─── WORKER DETAIL ─── */
+.worker-header {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.worker-header.rank-cc {
+  background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 100%);
+}
+.worker-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 2px solid rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.worker-info { flex: 1; min-width: 0; }
+.worker-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.worker-meta {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.7);
+  margin-top: 2px;
+}
+.worker-rank-badge {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+/* ─── ACTIVITY BREAKDOWN ─── */
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.act-chip {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  text-align: center;
+}
+.act-chip-val {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.act-chip-lbl {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}
+.act-chip.highlight { background: var(--blue); border-color: var(--blue); }
+.act-chip.highlight .act-chip-val,
+.act-chip.highlight .act-chip-lbl { color: white; }
+
+/* ─── CALENDAR ─── */
+.calendar-wrap {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+.calendar-inner { min-width: 600px; }
+.cal-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--blue);
+}
+.cal-dow {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  padding: 10px 4px;
+  letter-spacing: 0.06em;
+}
+.cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+.cal-day {
+  border: 0.5px solid var(--surface3);
+  min-height: 56px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cal-day.empty { background: var(--off-white); opacity: 0.4; }
+.cal-day-num {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-align: right;
+  line-height: 1;
+}
+.cal-act {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+/* Activity colors */
+.act-VUELO            { background: #1A237E; color: white; }
+.act-TURNO_AEROPUERTO { background: #F57C00; color: white; }
+.act-TURNO_DOMICILIO  { background: #7B1FA2; color: white; }
+.act-DIA_LIBRE        { background: #E8F5E9; color: #388E3C; border: 1px solid #A5D6A7; }
+.act-DIA_LIBRE_SOLICITADO { background: #F3E5F5; color: #7B1FA2; border: 1px solid #CE93D8; }
+.act-DIA_BLANCO       { background: #F5F5F5; color: #757575; border: 1px solid #E0E0E0; }
+.act-VACACIONES       { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+.act-LICENCIA_MEDICA  { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
+.act-FUERA_VUELO      { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+.act-REVA             { background: #E8EAF6; color: #283593; border: 1px solid #9FA8DA; }
+.act-CLASES_TIERRA    { background: #E0F2F1; color: #00695C; border: 1px solid #80CBC4; }
+.act-DH               { background: #FBE9E7; color: #BF360C; border: 1px solid #FFAB91; }
+.act-LP               { background: #FCE4EC; color: #880E4F; border: 1px solid #F48FB1; }
+.act-BLOQUE_LIBRE     { background: #F1F8E9; color: #558B2F; border: 1px solid #AED581; }
+.act-VUSA             { background: #FFFDE7; color: #827717; border: 1px solid #FFF176; }
+.act-ADM              { background: #ECEFF1; color: #455A64; border: 1px solid #B0BEC5; }
+.act-OTRO             { background: #F5F5F5; color: #9E9E9E; border: 1px solid #E0E0E0; }
+
+/* ─── COMPARISON BARS ─── */
+.comparison-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.comp-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 100px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.comp-bar-wrap { flex: 1; height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+.comp-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.comp-bar.self { background: var(--blue); }
+.comp-bar.avg  { background: var(--red); }
+.comp-value { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 500; color: var(--text-mid); min-width: 50px; text-align: right; }
+
+/* ─── TABS ─── */
+.tab-row { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab-btn {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all .2s;
+}
+.tab-btn:hover { border-color: var(--blue-sky); color: var(--blue-sky); }
+.tab-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+/* ─── LOADING ─── */
+.loading {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 300px;
+  flex-direction: column;
+  gap: 12px;
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--surface3);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── LEGEND ─── */
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--text-mid); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-light); font-size: 0.9rem;
+}
+
+/* ─── ADHERENCIA BADGE ─── */
+.adherencia-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem; font-weight: 700;
+  padding: 6px 14px; border-radius: 8px;
+}
+.adherencia-badge.high  { background: #d4f4e8; color: #1B7F5E; }
+.adherencia-badge.mid   { background: #FFF3CD; color: #856404; }
+.adherencia-badge.low   { background: #fde8ec; color: var(--red); }
+
+/* ─── TOOLTIP ─── */
+.tooltip-wrap { position: relative; display: inline-block; }
+.tooltip-content {
+  visibility: hidden; opacity: 0;
+  background: var(--text); color: white;
+  font-size: 0.72rem; padding: 6px 10px;
+  border-radius: 6px;
+  position: absolute; z-index: 200;
+  bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  transition: opacity .15s;
+  pointer-events: none;
+}
+.tooltip-wrap:hover .tooltip-content { visibility: visible; opacity: 1; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .charts-grid { grid-template-columns: 1fr; }
+  .chart-card.wide { grid-column: span 1; }
+}
+@media (max-width: 640px) {
+  .header { height: 58px; padding: 0 14px; }
+  .header-title h1 { font-size: 1.1rem; }
+  .header-badge { display: none; }
+  .container { padding: 14px 12px; }
+  .control-bar { padding: 12px 14px; gap: 10px; }
+  select { min-width: 140px; font-size: 0.82rem; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .kpi-value { font-size: 1.6rem; }
+  .control-divider { display: none; }
+  .worker-header { padding: 14px 16px; }
+  .worker-name { font-size: 1.1rem; }
+}
+@media (max-width: 400px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .activity-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <img class="header-logo" id="logo-img" alt="STCLE Logo">
+    <div class="header-title">
+      <h1>STCLE Dashboard</h1>
+      <span>Sindicato de Tripulantes de Cabina · LanExpress</span>
+    </div>
+  </div>
+  <div class="header-badge" id="last-update">Cargando datos…</div>
+</header>
+
+<div class="container">
+
+  <!-- CONTROL BAR -->
+  <div class="control-bar">
+    <div class="control-group">
+      <span class="control-label">Cargo</span>
+      <div class="rank-selector">
+        <button class="rank-btn active-jsb" id="btn-ccm" onclick="selectRank('CCM')">JSB · CCM</button>
+        <button class="rank-btn" id="btn-cc"  onclick="selectRank('CC')">TC · CC</button>
+      </div>
+    </div>
+    <div class="control-divider"></div>
+    <div class="control-group">
+      <span class="control-label">Mes</span>
+      <select id="sel-period" onchange="onPeriodChange()"></select>
+    </div>
+    <div class="control-divider"></div>
+    <div class="control-group">
+      <span class="control-label">Tripulante</span>
+      <select id="sel-worker" onchange="onWorkerChange()">
+        <option value="">— Seleccionar tripulante —</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- OVERVIEW SECTION -->
+  <div id="section-overview">
+    <div class="section-title" id="overview-title">Vista General · JSB</div>
+    <div class="kpi-grid" id="kpi-overview"></div>
+    <div class="charts-grid" id="charts-overview"></div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- WORKER DETAIL SECTION -->
+  <div id="section-worker" style="display:none">
+    <div class="section-title" id="worker-section-title">Detalle del Tripulante</div>
+    <div id="worker-header-wrap"></div>
+    <div class="tab-row" id="tab-row">
+      <button class="tab-btn active" onclick="setTab('kpis')">KPIs del Mes</button>
+      <button class="tab-btn" onclick="setTab('calendar')">Calendario</button>
+      <button class="tab-btn" onclick="setTab('comparison')">Comparativa</button>
+    </div>
+    <div id="tab-kpis">
+      <div class="kpi-grid" id="kpi-worker"></div>
+      <div class="charts-grid" id="charts-worker"></div>
+    </div>
+    <div id="tab-calendar" style="display:none">
+      <div class="calendar-wrap">
+        <div class="calendar-inner">
+          <div class="cal-header" id="cal-header"></div>
+          <div class="cal-body" id="cal-body"></div>
+        </div>
+      </div>
+      <div class="legend" id="cal-legend"></div>
+    </div>
+    <div id="tab-comparison" style="display:none">
+      <div id="comparison-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIGURATION
+// ══════════════════════════════════════════
+const BASE_URL = 'https://raw.githubusercontent.com/YOUR_ORG/stcle-dashboard/main/src/';
+const IS_LOCAL = window.location.protocol === 'file:' || window.location.hostname === 'localhost';
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let state = {
+  rank: 'CCM',
+  period: null,
+  worker: null,
+  tab: 'kpis',
+  summary: null,
+  distributions: null,
+  rankCache: { CCM: null, CC: null },  // workers_CCM.json / workers_CC.json
+  timelineCache: {},                    // key "CCM_2025-09" → {wid: {p:[...], e:[...]}}
+  chartInstances: {},
+};
+
+function getWorkerData() {
+  if (!state.worker || !state.rankCache[state.rank]) return null;
+  return state.rankCache[state.rank].workers[state.worker] || null;
+}
+
+// ══════════════════════════════════════════
+// FETCH HELPERS
+// ══════════════════════════════════════════
+async function fetchJSON(localPath, remotePath) {
+  const url = IS_LOCAL ? localPath : BASE_URL + (remotePath || localPath);
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}: ${url}`);
+  return r.json();
+}
+
+async function loadRankData(rank) {
+  if (state.rankCache[rank]) return;
+  const path = `src/workers_${rank}.json`;
+  state.rankCache[rank] = await fetchJSON(path, `workers_${rank}.json`);
+}
+
+async function loadTimeline(rank, period) {
+  const key = `${rank}_${period}`;
+  if (state.timelineCache[key]) return;
+  try {
+    const path = `src/timelines_${rank}_${period}.json`;
+    state.timelineCache[key] = await fetchJSON(path, `timelines_${rank}_${period}.json`);
+  } catch(e) {
+    state.timelineCache[key] = {};  // no data, don't retry
+  }
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+async function init() {
+  const logoEl = document.getElementById('logo-img');
+  try {
+    const lb64 = await fetch(IS_LOCAL ? 'src/logo_b64.txt' : BASE_URL + 'logo_b64.txt').then(r => r.text());
+    logoEl.src = `data:image/png;base64,${lb64.trim()}`;
+  } catch(e) { logoEl.style.display = 'none'; }
+
+  try {
+    [state.summary, state.distributions] = await Promise.all([
+      fetchJSON('src/summary_data.json', 'summary_data.json'),
+      fetchJSON('src/distributions.json', 'distributions.json'),
+    ]);
+  } catch(e) {
+    document.getElementById('last-update').textContent = '⚠ Error al cargar datos';
+    return;
+  }
+
+  // Load initial rank data
+  await loadRankData('CCM');
+
+  const periods = [...state.summary.periods].reverse();
+  const selPeriod = document.getElementById('sel-period');
+  periods.forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = formatPeriod(p);
+    if (i === 0) opt.selected = true;
+    selPeriod.appendChild(opt);
+  });
+  state.period = periods[0];
+
+  document.getElementById('last-update').textContent = `Datos al ${formatPeriod(state.period)}`;
+  populateWorkers();
+  renderOverview();
+}
+
+// ══════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════
+function formatPeriod(p) {
+  const [y, m] = p.split('-');
+  const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return `${months[parseInt(m)-1]} ${y}`;
+}
+
+function formatName(n) {
+  return n.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+function getInitials(n) {
+  const parts = n.trim().split(' ');
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return n[0].toUpperCase();
+}
+
+function destroyChart(id) {
+  if (state.chartInstances[id]) {
+    state.chartInstances[id].destroy();
+    delete state.chartInstances[id];
+  }
+}
+
+function makeChart(id, config) {
+  destroyChart(id);
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  state.chartInstances[id] = new Chart(canvas.getContext('2d'), config);
+}
+
+// ══════════════════════════════════════════
+// EVENT HANDLERS
+// ══════════════════════════════════════════
+async function selectRank(rank) {
+  state.rank = rank;
+  state.worker = null;
+  document.getElementById('btn-ccm').className = 'rank-btn' + (rank === 'CCM' ? ' active-jsb' : '');
+  document.getElementById('btn-cc').className  = 'rank-btn' + (rank === 'CC'  ? ' active-tc'  : '');
+  document.getElementById('section-worker').style.display = 'none';
+  document.getElementById('sel-worker').value = '';
+
+  await loadRankData(rank);
+  populateWorkers();
+  renderOverview();
+}
+
+function onPeriodChange() {
+  state.period = document.getElementById('sel-period').value;
+  document.getElementById('last-update').textContent = `Datos al ${formatPeriod(state.period)}`;
+  renderOverview();
+  if (state.worker) renderWorker();
+}
+
+async function onWorkerChange() {
+  const val = document.getElementById('sel-worker').value;
+  if (!val) {
+    state.worker = null;
+    document.getElementById('section-worker').style.display = 'none';
+    return;
+  }
+  state.worker = val;
+  await loadRankData(state.rank);
+  showWorkerSection();
+  renderWorker();
+}
+
+function setTab(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    const tabs = ['kpis', 'calendar', 'comparison'];
+    b.className = 'tab-btn' + (tabs[i] === tab ? ' active' : '');
+  });
+  document.getElementById('tab-kpis').style.display       = tab === 'kpis'       ? '' : 'none';
+  document.getElementById('tab-calendar').style.display   = tab === 'calendar'   ? '' : 'none';
+  document.getElementById('tab-comparison').style.display = tab === 'comparison' ? '' : 'none';
+  if (tab === 'calendar')   loadTimelineAndRenderCalendar();
+  if (tab === 'comparison') renderComparison();
+}
+
+function populateWorkers() {
+  const sel = document.getElementById('sel-worker');
+  sel.innerHTML = '<option value="">— Seleccionar tripulante —</option>';
+  const workers = state.summary.workers_index[state.rank] || [];
+  workers.forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w.id;
+    opt.textContent = formatName(w.name);
+    sel.appendChild(opt);
+  });
+}
+
+function showWorkerSection() {
+  document.getElementById('section-worker').style.display = '';
+  document.getElementById('tab-kpis').style.display = '';
+  document.getElementById('tab-calendar').style.display = 'none';
+  document.getElementById('tab-comparison').style.display = 'none';
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.className = 'tab-btn' + (i === 0 ? ' active' : '');
+  });
+  state.tab = 'kpis';
+}
+
+// ══════════════════════════════════════════
+// OVERVIEW RENDER
+// ══════════════════════════════════════════
+function renderOverview() {
+  const rankName = state.rank === 'CCM' ? 'Jefes de Servicio a Bordo' : 'Tripulantes de Cabina';
+  document.getElementById('overview-title').innerHTML =
+    `Vista General · <span style="color:var(--${state.rank==='CCM'?'blue':'red'}-light)">${rankName}</span> · ${formatPeriod(state.period)}`;
+
+  const key    = `Publicado_${state.rank}`;
+  const mdata  = state.summary.monthly[state.period]?.[key];
+  const dists  = state.distributions?.[state.period]?.[key];
+  const edata  = state.summary.monthly[state.period]?.[`Efectuado_${state.rank}`] || null;
+  const kpiEl  = document.getElementById('kpi-overview');
+  const chartEl = document.getElementById('charts-overview');
+
+  if (!mdata) {
+    kpiEl.innerHTML = '<div class="empty-state">No hay datos para este período y cargo.</div>';
+    chartEl.innerHTML = '';
+    return;
+  }
+
+  const adherencia = edata ? Math.min(100, Math.round((edata.avg_flight_hours / mdata.avg_flight_hours) * 100)) : null;
+
+  kpiEl.innerHTML = `
+    <div class="kpi-card blue">
+      <span class="kpi-icon">👥</span>
+      <div class="kpi-value">${mdata.total_workers}</div>
+      <div class="kpi-label">Tripulantes en Plantilla</div>
+      <div class="kpi-sub">${mdata.active_workers} activos en el período</div>
+    </div>
+    <div class="kpi-card red">
+      <span class="kpi-icon">✈️</span>
+      <div class="kpi-value">${mdata.avg_flight_hours.toFixed(1)}<span style="font-size:1rem">h</span></div>
+      <div class="kpi-label">Horas Vuelo Promedio</div>
+      ${edata ? `<div class="kpi-sub">Efectuado: ${edata.avg_flight_hours.toFixed(1)}h</div>` : ''}
+    </div>
+    <div class="kpi-card blue">
+      <span class="kpi-icon">🔁</span>
+      <div class="kpi-value">${mdata.avg_flights.toFixed(1)}</div>
+      <div class="kpi-label">Rotaciones Promedio</div>
+      <div class="kpi-sub">Tramos por tripulante</div>
+    </div>
+    <div class="kpi-card gold">
+      <span class="kpi-icon">📅</span>
+      <div class="kpi-value">${mdata.avg_duty_days.toFixed(1)}</div>
+      <div class="kpi-label">Días de Servicio Prom.</div>
+      <div class="kpi-sub">Excluye ausencias prolongadas</div>
+    </div>
+    <div class="kpi-card purple">
+      <span class="kpi-icon">🏢</span>
+      <div class="kpi-value">${mdata.workers_with_airport_turns}</div>
+      <div class="kpi-label">Con Turnos Aeropuerto</div>
+      <div class="kpi-sub">Prom: ${mdata.avg_airport_turns.toFixed(1)} turno(s)</div>
+    </div>
+    <div class="kpi-card green">
+      <span class="kpi-icon">🏠</span>
+      <div class="kpi-value">${mdata.avg_home_turns.toFixed(1)}</div>
+      <div class="kpi-label">Turnos Domicilio Prom.</div>
+      <div class="kpi-sub">Tripulantes activos</div>
+    </div>
+    ${adherencia !== null ? `
+    <div class="kpi-card ${adherencia >= 95 ? 'green' : adherencia >= 85 ? 'gold' : 'red'}">
+      <span class="kpi-icon">📊</span>
+      <div class="kpi-value">${adherencia}%</div>
+      <div class="kpi-label">Adherencia al Rol</div>
+      <div class="kpi-sub">Pub. vs Efectuado</div>
+    </div>` : ''}
+  `;
+
+  chartEl.innerHTML = `
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot"></span>Distribución Horas de Vuelo</div>
+      <div class="chart-wrap"><canvas id="chart-dist-hours"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot"></span>Turnos en Aeropuerto por Tripulante</div>
+      <div class="chart-wrap"><canvas id="chart-airport"></canvas></div>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-title"><span class="dot"></span>Evolución Horas de Vuelo Promedio (Histórico)</div>
+      <div class="chart-wrap tall"><canvas id="chart-trend"></canvas></div>
+    </div>
+  `;
+
+  if (dists?.flight_hours_dist) {
+    const vals = Object.values(dists.flight_hours_dist).map(Number).filter(v => v > 0);
+    const bins = buildHistogram(vals, 12);
+    makeChart('chart-dist-hours', {
+      type: 'bar',
+      data: { labels: bins.labels, datasets: [{
+        data: bins.counts,
+        backgroundColor: 'rgba(26,35,126,0.7)',
+        borderColor: 'rgba(26,35,126,0.9)',
+        borderWidth: 1, borderRadius: 4,
+      }]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          title: t => `${t[0].label} h`,
+          label: t => `${t.raw} tripulante(s)`
+        }}},
+        scales: {
+          x: { title: { display: true, text: 'Horas de vuelo', font: { size: 10 } }, grid: { display: false } },
+          y: { title: { display: true, text: 'N° personas', font: { size: 10 } }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  if (dists?.airport_turns_dist) {
+    const counts = {};
+    Object.values(dists.airport_turns_dist).forEach(v => { counts[v] = (counts[v] || 0) + 1; });
+    const labels = Object.keys(counts).map(Number).sort((a,b) => a-b);
+    makeChart('chart-airport', {
+      type: 'bar',
+      data: {
+        labels: labels.map(l => `${l} turno${l!==1?'s':''}`),
+        datasets: [{
+          data: labels.map(l => counts[l]),
+          backgroundColor: ['rgba(200,16,46,0.75)','rgba(200,16,46,0.55)','rgba(200,16,46,0.35)','rgba(200,16,46,0.2)'],
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: t => `${t.raw} tripulante(s)` }}},
+        scales: {
+          x: { title: { display: true, text: 'Turnos AS', font: { size: 10 } }, grid: { display: false } },
+          y: { title: { display: true, text: 'N° personas', font: { size: 10 } }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  const periods = state.summary.periods;
+  const trendPub = periods.map(p => state.summary.monthly[p]?.[key]?.avg_flight_hours || null);
+  const trendEf  = periods.map(p => state.summary.monthly[p]?.[`Efectuado_${state.rank}`]?.avg_flight_hours || null);
+  const datasets = [{
+    label: 'Publicado', data: trendPub,
+    borderColor: '#1A237E', backgroundColor: 'rgba(26,35,126,0.08)',
+    fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#1A237E',
+  }];
+  if (trendEf.some(v => v !== null)) {
+    datasets.push({
+      label: 'Efectuado', data: trendEf,
+      borderColor: '#C8102E', backgroundColor: 'rgba(200,16,46,0.06)',
+      fill: true, tension: 0.4, borderDash: [5,4], pointRadius: 5, pointBackgroundColor: '#C8102E',
+    });
+  }
+  makeChart('chart-trend', {
+    type: 'line',
+    data: { labels: periods.map(formatPeriod), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } },
+        tooltip: { callbacks: { label: t => `${t.dataset.label}: ${t.raw?.toFixed(1)} h` } }
+      },
+      scales: {
+        y: { title: { display: true, text: 'Horas promedio', font: { size: 11 } }, beginAtZero: false },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// WORKER RENDER (uses rankCache, no per-worker fetch)
+// ══════════════════════════════════════════
+function renderWorker() {
+  const w = getWorkerData();
+  if (!w) return;
+
+  const pkey = `${state.period}_Publicado`;
+  const ekey = `${state.period}_Efectuado`;
+  const pd = w.periods[pkey];
+  const ed = w.periods[ekey];
+
+  const isCC = w.rank === 'CC';
+  const rankLabel = isCC ? 'TC · Tripulante de Cabina' : 'JSB · Jefe de Servicio a Bordo';
+  document.getElementById('worker-section-title').textContent = `Detalle · ${formatPeriod(state.period)}`;
+  document.getElementById('worker-header-wrap').innerHTML = `
+    <div class="worker-header ${isCC ? 'rank-cc' : ''}">
+      <div class="worker-avatar">${getInitials(w.name)}</div>
+      <div class="worker-info">
+        <div class="worker-name">${formatName(w.name)}</div>
+        <div class="worker-meta">${rankLabel} · ${formatPeriod(state.period)}</div>
+      </div>
+      <div class="worker-rank-badge">${w.rank}</div>
+    </div>
+  `;
+
+  if (!pd) {
+    document.getElementById('kpi-worker').innerHTML = '<div class="empty-state">Sin datos para este mes.</div>';
+    document.getElementById('charts-worker').innerHTML = '';
+    return;
+  }
+
+  const adherencia = (ed && pd.flight_hours > 0)
+    ? Math.round((ed.flight_hours / pd.flight_hours) * 100) : null;
+  const rankKey  = `Publicado_${state.rank}`;
+  const avgData  = state.summary.monthly[state.period]?.[rankKey];
+
+  document.getElementById('kpi-worker').innerHTML = `
+    <div class="kpi-card blue">
+      <span class="kpi-icon">✈️</span>
+      <div class="kpi-value">${pd.flight_hours.toFixed(1)}<span style="font-size:1rem">h</span></div>
+      <div class="kpi-label">Horas de Vuelo</div>
+      ${avgData ? `<div class="kpi-sub">Promedio cargo: ${avgData.avg_flight_hours.toFixed(1)}h</div>` : ''}
+    </div>
+    <div class="kpi-card red">
+      <span class="kpi-icon">🔁</span>
+      <div class="kpi-value">${pd.flight_count}</div>
+      <div class="kpi-label">Tramos de Vuelo</div>
+      ${avgData ? `<div class="kpi-sub">Promedio cargo: ${avgData.avg_flights.toFixed(1)}</div>` : ''}
+    </div>
+    <div class="kpi-card purple">
+      <span class="kpi-icon">🏢</span>
+      <div class="kpi-value">${pd.airport_turns}</div>
+      <div class="kpi-label">Turnos Aeropuerto</div>
+      ${avgData ? `<div class="kpi-sub">${avgData.workers_with_airport_turns} trip. tienen AS este mes</div>` : ''}
+    </div>
+    <div class="kpi-card green">
+      <span class="kpi-icon">🏠</span>
+      <div class="kpi-value">${pd.home_turns}</div>
+      <div class="kpi-label">Turnos Domicilio</div>
+      ${avgData ? `<div class="kpi-sub">Promedio cargo: ${avgData.avg_home_turns.toFixed(1)}</div>` : ''}
+    </div>
+    <div class="kpi-card gold">
+      <span class="kpi-icon">😴</span>
+      <div class="kpi-value">${pd.free_days + pd.white_days + pd.bloque_libre}</div>
+      <div class="kpi-label">Días Descanso</div>
+      <div class="kpi-sub">DO: ${pd.free_days} · B: ${pd.white_days} · Q: ${pd.bloque_libre}</div>
+    </div>
+    <div class="kpi-card ${pd.vac_days>0?'gold':'blue'}">
+      <span class="kpi-icon">🏖️</span>
+      <div class="kpi-value">${pd.vac_days}</div>
+      <div class="kpi-label">Días Vacaciones</div>
+      ${pd.sick_days > 0 ? `<div class="kpi-sub">Lic. Médica: ${pd.sick_days}d</div>` : ''}
+    </div>
+    ${pd.oof_days > 0 ? `<div class="kpi-card blue"><span class="kpi-icon">✈️</span><div class="kpi-value">${pd.oof_days}</div><div class="kpi-label">Días Fuera Vuelo</div></div>` : ''}
+    ${pd.reva > 0    ? `<div class="kpi-card green"><span class="kpi-icon">🔄</span><div class="kpi-value">${pd.reva}</div><div class="kpi-label">REVA</div></div>` : ''}
+    ${adherencia !== null ? `
+    <div class="kpi-card ${adherencia>=95?'green':adherencia>=85?'gold':'red'}">
+      <span class="kpi-icon">📊</span>
+      <div class="kpi-value">${adherencia}%</div>
+      <div class="kpi-label">Adherencia al Rol</div>
+      <div class="kpi-sub">Pub: ${pd.flight_hours.toFixed(1)}h / Ef: ${ed.flight_hours.toFixed(1)}h</div>
+    </div>` : ''}
+  `;
+
+  const cw = document.getElementById('charts-worker');
+  cw.innerHTML = `
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot"></span>Actividades del Mes</div>
+      <div class="chart-wrap"><canvas id="chart-w-acts"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><span class="dot"></span>Evolución Horas de Vuelo</div>
+      <div class="chart-wrap"><canvas id="chart-w-trend"></canvas></div>
+    </div>
+  `;
+
+  const actDefs = [
+    ['Vuelos', pd.flight_count, '#1A237E'],
+    ['AS', pd.airport_turns, '#F57C00'],
+    ['HS', pd.home_turns, '#7B1FA2'],
+    ['Días Libre', pd.free_days, '#388E3C'],
+    ['DR', pd.free_days, '#7B1FA2'],
+    ['Blancos', pd.white_days, '#757575'],
+    ['Vacaciones', pd.vac_days, '#F9A825'],
+    ['Licencia', pd.sick_days, '#C62828'],
+    ['OOF', pd.oof_days, '#1565C0'],
+    ['Q', pd.bloque_libre, '#558B2F'],
+    ['Otros', pd.reva + pd.clases + pd.dh, '#9E9E9E'],
+  ].filter(x => x[1] > 0);
+
+  makeChart('chart-w-acts', {
+    type: 'doughnut',
+    data: {
+      labels: actDefs.map(x => x[0]),
+      datasets: [{ data: actDefs.map(x => x[1]), backgroundColor: actDefs.map(x => x[2]), borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '62%',
+      plugins: { legend: { position: 'right', labels: { font: { size: 10 }, usePointStyle: true, padding: 8 } } }
+    }
+  });
+
+  const allPeriods = state.summary.periods;
+  const rc = state.rankCache[state.rank]?.workers[state.worker];
+  const wPub = allPeriods.map(p => rc?.periods[`${p}_Publicado`]?.flight_hours ?? null);
+  const wEf  = allPeriods.map(p => rc?.periods[`${p}_Efectuado`]?.flight_hours ?? null);
+  const tDsets = [{ label: 'Publicado', data: wPub, borderColor: '#1A237E', backgroundColor: 'rgba(26,35,126,0.08)', fill: true, tension: 0.4, pointRadius: 4 }];
+  if (wEf.some(v => v !== null)) {
+    tDsets.push({ label: 'Efectuado', data: wEf, borderColor: '#C8102E', borderDash: [5,4], tension: 0.4, pointRadius: 4 });
+  }
+  makeChart('chart-w-trend', {
+    type: 'line',
+    data: { labels: allPeriods.map(formatPeriod), datasets: tDsets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } },
+        tooltip: { callbacks: { label: t => `${t.dataset.label}: ${t.raw?.toFixed(1)} h` } }
+      },
+      scales: {
+        y: { beginAtZero: false, title: { display: true, text: 'Horas', font: { size: 11 } } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// CALENDAR — lazy-loads timelines_RANK_PERIOD.json
+// ══════════════════════════════════════════
+async function loadTimelineAndRenderCalendar() {
+  document.getElementById('cal-body').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  await loadTimeline(state.rank, state.period);
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const tlKey  = `${state.rank}_${state.period}`;
+  const tdata  = state.timelineCache[tlKey] || {};
+  const workerTl = tdata[state.worker];
+
+  if (!workerTl || !workerTl.p) {
+    document.getElementById('cal-body').innerHTML = '<div class="empty-state">Sin datos de calendario para este mes.</div>';
+    document.getElementById('cal-legend').innerHTML = '';
+    return;
+  }
+
+  const [y, m] = state.period.split('-').map(Number);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const firstMon = (new Date(y, m-1, 1).getDay() + 6) % 7;
+
+  const dows = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  document.getElementById('cal-header').innerHTML = dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  // Compact format: [date, activity, act_type, block_hours, dep, arv]
+  const byDate = {};
+  workerTl.p.forEach(e => {
+    const date = e[0];
+    if (!byDate[date]) byDate[date] = [];
+    byDate[date].push({ date: e[0], activity: e[1], act_type: e[2], block_hours: e[3], dep: e[4], arv: e[5] });
+  });
+
+  let cells = '';
+  for (let i = 0; i < firstMon; i++) cells += '<div class="cal-day empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const acts = byDate[dateStr] || [];
+    const actHtml = acts.slice(0,3).map(e => {
+      const label = e.act_type === 'VUELO' ? `${e.dep}→${e.arv}` : e.activity;
+      return `<div class="cal-act act-${e.act_type}" title="${e.activity}${e.block_hours>0?' '+e.block_hours.toFixed(1)+'h':''}">${label}</div>`;
+    }).join('');
+    const extra = acts.length > 3 ? `<div class="cal-act act-OTRO">+${acts.length-3}</div>` : '';
+    cells += `<div class="cal-day"><div class="cal-day-num">${d}</div>${actHtml}${extra}</div>`;
+  }
+  const rem = (firstMon + daysInMonth) % 7;
+  if (rem > 0) for (let i = 0; i < 7-rem; i++) cells += '<div class="cal-day empty"></div>';
+  document.getElementById('cal-body').innerHTML = cells;
+
+  const usedTypes = [...new Set(workerTl.p.map(e => e[2]))];
+  const typeLabels = {
+    'VUELO':'✈ Vuelo','TURNO_AEROPUERTO':'🏢 AS','TURNO_DOMICILIO':'🏠 HS',
+    'DIA_LIBRE':'😴 Día libre','DIA_LIBRE_SOLICITADO':'📋 DR','DIA_BLANCO':'⬜ Blanco',
+    'VACACIONES':'🏖 Vacaciones','LICENCIA_MEDICA':'🏥 Licencia','FUERA_VUELO':'🚫 OOF',
+    'REVA':'🔄 REVA','CLASES_TIERRA':'📚 Clases','DH':'↗ DH','LP':'↙ LP',
+    'BLOQUE_LIBRE':'🟩 Q','VUSA':'🛂 VUSA','ADM':'📝 ADM','OTRO':'• Otro'
+  };
+  document.getElementById('cal-legend').innerHTML = usedTypes.map(t => `
+    <div class="legend-item">
+      <div class="legend-dot act-${t}" style="width:12px;height:12px;border-radius:2px;"></div>
+      <span>${typeLabels[t]||t}</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// COMPARISON
+// ══════════════════════════════════════════
+function renderComparison() {
+  const w      = getWorkerData();
+  if (!w) return;
+  const pkey   = `${state.period}_Publicado`;
+  const pd     = w.periods[pkey];
+  const rankKey = `Publicado_${state.rank}`;
+  const avgData = state.summary.monthly[state.period]?.[rankKey];
+  const dists   = state.distributions?.[state.period]?.[rankKey];
+  const el      = document.getElementById('comparison-content');
+
+  if (!pd || !avgData) { el.innerHTML = '<div class="empty-state">Sin datos de comparativa.</div>'; return; }
+
+  const rank = state.rank === 'CCM' ? 'JSB' : 'TC';
+  let percentile = null;
+  if (dists?.flight_hours_dist) {
+    const vals = Object.values(dists.flight_hours_dist).map(Number).sort((a,b)=>a-b);
+    percentile = Math.round((vals.filter(v => v < pd.flight_hours).length / vals.length) * 100);
+  }
+
+  const maxHours   = Math.max(pd.flight_hours, avgData.avg_flight_hours, 1);
+  const maxFlights = Math.max(pd.flight_count, avgData.avg_flights, 1);
+  const maxHome    = Math.max(pd.home_turns, avgData.avg_home_turns, 1);
+
+  const bar = (val, max, cls='self') =>
+    `<div class="comp-bar-wrap"><div class="comp-bar ${cls}" style="width:${Math.min(100,(val/max*100)).toFixed(1)}%"></div></div>`;
+
+  el.innerHTML = `
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>vs. Promedio ${rank} · ${formatPeriod(state.period)}</div>
+        <div style="margin-top:8px">
+          ${[
+            ['Horas vuelo', pd.flight_hours.toFixed(1)+'h', avgData.avg_flight_hours.toFixed(1)+'h', pd.flight_hours, avgData.avg_flight_hours, maxHours],
+            ['Tramos', pd.flight_count, avgData.avg_flights.toFixed(1), pd.flight_count, avgData.avg_flights, maxFlights],
+            ['Turnos HS', pd.home_turns, avgData.avg_home_turns.toFixed(1), pd.home_turns, avgData.avg_home_turns, maxHome],
+            ['Turnos AS', pd.airport_turns, avgData.avg_airport_turns.toFixed(1), pd.airport_turns, avgData.avg_airport_turns, Math.max(pd.airport_turns, avgData.avg_airport_turns, 1)],
+          ].map(([label, valStr, avgStr, val, avg, max]) => `
+            <div style="margin-bottom:14px">
+              <div class="comparison-item">
+                <div class="comp-label">${label}</div>
+                ${bar(val, max, 'self')}
+                <div class="comp-value">${valStr}</div>
+              </div>
+              <div class="comparison-item">
+                <div class="comp-label" style="color:var(--red)">Prom. ${rank}</div>
+                ${bar(avg, max, 'avg')}
+                <div class="comp-value">${avgStr}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><span class="dot"></span>Posición en Percentil</div>
+        <div style="text-align:center;padding:20px 0">
+          ${percentile !== null ? `
+          <div style="font-family:'Rajdhani',sans-serif;font-size:3.5rem;font-weight:700;color:var(--blue);line-height:1">${percentile}°</div>
+          <div style="font-size:0.8rem;color:var(--text-light);margin-top:4px">PERCENTIL DE HORAS DE VUELO</div>
+          <div style="font-size:0.75rem;color:var(--text-light);margin-top:8px;max-width:200px;margin-left:auto;margin-right:auto">
+            Superó a ${percentile}% de los ${rank} activos en horas voladas
+          </div>
+          <div style="margin-top:16px">
+            <div class="adherencia-badge ${percentile>=75?'high':percentile>=40?'mid':'low'}">
+              ${percentile>=75?'🔝 Top performer':percentile>=40?'📈 En rango normal':'📉 Bajo promedio'}
+            </div>
+          </div>` : '<div class="empty-state">Sin datos de distribución.</div>'}
+        </div>
+        <div class="chart-wrap" style="height:160px;margin-top:16px"><canvas id="chart-comp-hist"></canvas></div>
+      </div>
+    </div>
+  `;
+
+  if (dists?.flight_hours_dist) {
+    const vals = Object.values(dists.flight_hours_dist).map(Number).filter(v => v > 0);
+    const bins = buildHistogram(vals, 12);
+    const workerBin = bins.edges.findIndex((e,i) => bins.edges[i+1] && pd.flight_hours >= e && pd.flight_hours < bins.edges[i+1]);
+    makeChart('chart-comp-hist', {
+      type: 'bar',
+      data: {
+        labels: bins.labels,
+        datasets: [{ data: bins.counts, backgroundColor: bins.counts.map((_,i) => i===workerBin ? '#C8102E' : 'rgba(26,35,126,0.35)'), borderRadius: 3 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: t => `${t.raw} tripulante(s)` } } },
+        scales: {
+          x: { title: { display: true, text: 'Horas', font: { size: 10 } }, grid: { display: false } },
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+}
+
+// ══════════════════════════════════════════
+// HISTOGRAM HELPER
+// ══════════════════════════════════════════
+function buildHistogram(vals, numBins) {
+  if (!vals.length) return { labels: [], counts: [], edges: [] };
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const width = (max - min) / numBins || 1;
+  const edges = Array.from({length: numBins+1}, (_, i) => min + i * width);
+  const counts = new Array(numBins).fill(0);
+  vals.forEach(v => { counts[Math.min(numBins-1, Math.floor((v-min)/width))]++; });
+  return {
+    labels: edges.slice(0,-1).map((e,i) => `${e.toFixed(0)}-${edges[i+1].toFixed(0)}`),
+    counts, edges,
+  };
+}
+
+// ══════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
