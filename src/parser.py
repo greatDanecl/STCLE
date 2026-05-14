@@ -110,12 +110,9 @@ def load_file(filepath):
     # Normalize Str Dt
     df['Str Dt'] = df['Str Dt'].apply(parse_str_dt)
 
-    # Normalize periodo
-    if 'periodo' not in df.columns or df['periodo'].isna().all():
-        # Infer from filename or from data
-        df['periodo'] = df['Str Dt'].dt.to_period('M').dt.to_timestamp()
-    else:
-        df['periodo'] = pd.to_datetime(df['periodo'])
+    # Normalize periodo — always derive from actual Str Dt per row
+    # This correctly handles files spanning multiple months (e.g. FEB26 = Jan-Mar)
+    df["periodo"] = df["Str Dt"].dt.to_period("M").dt.to_timestamp()
 
     # Normalize Block Time to hours
     df['block_hours'] = df['Block Time'].apply(timedelta_to_hours)
