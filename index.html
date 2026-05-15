@@ -639,7 +639,7 @@ select:hover { border-color: var(--blue-sky); }
 // ══════════════════════════════════════════
 // CONFIGURATION
 // ══════════════════════════════════════════
-const BASE_URL = 'https://raw.githubusercontent.com/greatdanecl/STCLE/main/src/';
+const BASE_URL = 'https://raw.githubusercontent.com/YOUR_ORG/stcle-dashboard/main/src/';
 const IS_LOCAL = window.location.protocol === 'file:' || window.location.hostname === 'localhost';
 
 // ══════════════════════════════════════════
@@ -1201,7 +1201,7 @@ function renderCalendar() {
   if (rem > 0) for (let i = 0; i < 7-rem; i++) cells += '<div class="cal-day empty"></div>';
   document.getElementById('cal-body').innerHTML = cells;
 
-  const usedTypes = [...new Set(workerTl.p.map(e => e[2]))];
+  const usedTypes = [...new Set(workerTl.p.map(e => e[3]))];  // e[3] = act_type
   const typeLabels = {
     'VUELO':               '✈ Vuelo',
     'TURNO_AEROPUERTO':    '🏢 Turno Aeropuerto (AS)',
