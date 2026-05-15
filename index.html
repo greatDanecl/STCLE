@@ -639,7 +639,7 @@ select:hover { border-color: var(--blue-sky); }
 // ══════════════════════════════════════════
 // CONFIGURATION
 // ══════════════════════════════════════════
-const BASE_URL = 'https://greatdanecl.github.io/STCLE/src/';
+const BASE_URL = 'https://raw.githubusercontent.com/YOUR_ORG/stcle-dashboard/main/src/';
 const IS_LOCAL = window.location.protocol === 'file:' || window.location.hostname === 'localhost';
 
 // ══════════════════════════════════════════
@@ -1174,12 +1174,12 @@ function renderCalendar() {
   const dows = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
   document.getElementById('cal-header').innerHTML = dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
 
-  // Compact format: [date, activity, act_type, block_hours, dep, arv]
+  // Compact format: [date, label, activity, act_type, block_hours, dep, arv]
   const byDate = {};
   workerTl.p.forEach(e => {
     const date = e[0];
     if (!byDate[date]) byDate[date] = [];
-    byDate[date].push({ date: e[0], activity: e[1], act_type: e[2], block_hours: e[3], dep: e[4], arv: e[5] });
+    byDate[date].push({ date: e[0], label: e[1], activity: e[2], act_type: e[3], block_hours: e[4], dep: e[5], arv: e[6] });
   });
 
   let cells = '';
@@ -1188,8 +1188,11 @@ function renderCalendar() {
     const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const acts = byDate[dateStr] || [];
     const actHtml = acts.slice(0,3).map(e => {
-      const label = e.act_type === 'VUELO' ? `${e.dep}→${e.arv}` : e.activity;
-      return `<div class="cal-act act-${e.act_type}" title="${e.activity}${e.block_hours>0?' '+e.block_hours.toFixed(1)+'h':''}">${label}</div>`;
+      const chip = e.act_type === 'VUELO' ? `${e.dep}→${e.arv}` : e.activity;
+      const tip  = e.act_type === 'VUELO'
+        ? `${e.activity} | ${e.label} | ${e.block_hours.toFixed(1)}h`
+        : `${e.activity} — ${e.label}`;
+      return `<div class="cal-act act-${e.act_type}" title="${tip}">${chip}</div>`;
     }).join('');
     const extra = acts.length > 3 ? `<div class="cal-act act-OTRO">+${acts.length-3}</div>` : '';
     cells += `<div class="cal-day"><div class="cal-day-num">${d}</div>${actHtml}${extra}</div>`;
@@ -1200,11 +1203,22 @@ function renderCalendar() {
 
   const usedTypes = [...new Set(workerTl.p.map(e => e[2]))];
   const typeLabels = {
-    'VUELO':'✈ Vuelo','TURNO_AEROPUERTO':'🏢 AS','TURNO_DOMICILIO':'🏠 HS',
-    'DIA_LIBRE':'😴 Día libre','DIA_LIBRE_SOLICITADO':'📋 DR','DIA_BLANCO':'⬜ Blanco',
-    'VACACIONES':'🏖 Vacaciones','LICENCIA_MEDICA':'🏥 Licencia','FUERA_VUELO':'🚫 OOF',
-    'REVA':'🔄 REVA','CLASES_TIERRA':'📚 Clases','DH':'↗ DH','LP':'↙ LP',
-    'BLOQUE_LIBRE':'🟩 Q','VUSA':'🛂 VUSA','ADM':'📝 ADM','OTRO':'• Otro'
+    'VUELO':               '✈ Vuelo',
+    'TURNO_AEROPUERTO':    '🏢 Turno Aeropuerto (AS)',
+    'TURNO_DOMICILIO':     '🏠 Turno Domicilio (HS)',
+    'DIA_LIBRE':           '😴 Día Libre',
+    'DIA_LIBRE_SOLICITADO':'📋 Día Libre Solicitado',
+    'DIA_BLANCO':          '⬜ Blanco en Rol',
+    'VACACIONES':          '🏖 Vacaciones',
+    'LICENCIA_MEDICA':     '🏥 Licencia Médica / Reunión',
+    'FUERA_VUELO':         '🚫 Fuera de Vuelo',
+    'REVA':                '🔄 REVA',
+    'CLASES_TIERRA':       '📚 Cursos / Entrenamiento',
+    'BLOQUE_LIBRE':        '🟩 Bloque Libre Quincena',
+    'LP':                  '↗ LP (Posicionamiento)',
+    'ADM':                 '📝 Administrativo',
+    'VUSA':                '🛂 Entrevista de Visa',
+    'OTRO':                '• Otro',
   };
   document.getElementById('cal-legend').innerHTML = usedTypes.map(t => `
     <div class="legend-item">
