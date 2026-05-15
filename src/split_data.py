@@ -45,7 +45,7 @@ with open(os.path.join(SRC, 'distributions.json'), 'w') as f:
 
 def compact_timeline(tl):
     """Convert timeline dicts to compact arrays: [date, activity, act_type, hours, dep, arv]"""
-    return [[e['date'], e['activity'], e['act_type'], e['block_hours'], e['dep'], e['arv']] for e in tl]
+    return [[e['date'], e.get('label', e['activity']), e['activity'], e['act_type'], e['block_hours'], e['dep'], e['arv']] for e in tl]
 
 # 3) workers_CCM.json and workers_CC.json (slim, no timelines)
 # 4) timelines_RANK_PERIOD.json (compact arrays, lazy-loaded for calendar)
